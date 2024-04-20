@@ -3,6 +3,7 @@ import React from 'react'
 import Container from '@/app/components/Container'
 import Logo from '@/app/components/Navbar/Logo'
 import Search from '@/app/components/Navbar/Search'
+import UserMenu from '@/app/components/Navbar/UserMenu'
 
 export default function NavBar() {
     return (
@@ -18,6 +19,7 @@ export default function NavBar() {
                     md-gap-0
                     '> <Logo />
                         <Search />
+                        <UserMenu />
 
                     </div>
                 </Container>
