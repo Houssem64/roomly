@@ -15,9 +15,9 @@ const UserMenu = () => {
         <div className="flex flex-row items-center gap-3">
             <div
                 className="hidden md:block text-sm font-semibold px-4 py-3 rounded-full hover:bg-netral-100 transition cursor-pointer"
-                onClick={(toggleMenu) => { }}
+                onClick={() => { }}
             > Rent your Home</div>
-            <div onClick={() => { }} className="p-4 md:py-1 md:px-2 border-[1px] border-neutral-700 flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-md transition">
+            <div onClick={toggleMenu} className="p-4 md:py-1 md:px-2 border-[1px] border-neutral-700 flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-md transition">
                 <AiOutlineMenu />
                 <div className="hidden md:block">
                     <Avatar />

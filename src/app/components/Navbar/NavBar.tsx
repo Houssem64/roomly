@@ -1,4 +1,4 @@
-
+"use client";
 import React from 'react'
 import Container from '@/app/components/Container'
 import Logo from '@/app/components/Navbar/Logo'
