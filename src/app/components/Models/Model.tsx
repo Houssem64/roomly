@@ -42,9 +42,11 @@ const model : React.FC<ModelProps> = ({
 
         }
         setShowModel(false);
-        setTimeout (() => {
-            onClose && onClose();
-        }, 300);
+    setTimeout(() => {
+      if (onClose) {
+        onClose();
+      }
+    }, 300);
     }, [disabled, onClose]);
 
     const habdleSubmit = useCallback (() => {
@@ -112,7 +114,37 @@ const model : React.FC<ModelProps> = ({
             
             `}
         >
+         <div className="
+         translate
+         h-full
+         lg:h-auto
+         md:h-auto
+         border-0
+         rounded-lg
+         shadow-lg
+         relative
+         flex
+         flex-col
+         w-full
+         bg-white
+         outline-none
+         focus:outline-none
 
+         
+         "
+         >
+         <div className="
+         felx
+         items-center
+         
+         
+         "
+         
+         >
+
+
+         </div>
+         </div>
         </div>
         </div>
         </div>
