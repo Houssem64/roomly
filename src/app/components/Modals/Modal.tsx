@@ -163,7 +163,7 @@ const modal: React.FC<ModalProps> = ({
                                             onClick={handleSeconderyAction} />)}
                                     <Button
                                         disabled={disabled}
-                                        label={actionLabel}
+                                        label={actionLabel || 'Undefined'}
                                         onClick={habdleSubmit} />
                                 </div>
                                 {footer}
