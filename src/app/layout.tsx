@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/app/components/Navbar/NavBar";
 import RegisterModal from "./components/Modals/RegisterModal";
+import LoginModal from "./components/Modals/LoginModal";
 import ToasterProvider from "./providers/ToasterProvider";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ToasterProvider />
         <RegisterModal />
+        <LoginModal />
         <NavBar />
         {children}</body>
     </html>
