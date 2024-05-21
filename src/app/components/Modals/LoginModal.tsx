@@ -11,9 +11,11 @@ import Heading from "../Heading";
 import Input from "../Inputs/Input";
 import toast from "react-hot-toast";
 import Button from "../Button";
+import { useRouter } from "next/navigation";
 const LoginModal = () => {
     const registerModal = useRegisterModal();
     const LoginModal = useLoginModal();
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
     const {
@@ -22,7 +24,7 @@ const LoginModal = () => {
         formState: { errors },
     } = useForm<FieldValues>({
         defaultValues: {
-           
+
             email: '',
             password: '',
         },
@@ -30,17 +32,21 @@ const LoginModal = () => {
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         setIsLoading(true);
-        axios.post('/api/register', data)
-            .then(() => {
-                registerModal.onClose();
-            })
-            .catch((error) => {
-                toast.error("Something went wrong")
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
 
+        signIn('credentials', {
+            ...data,
+            redirect: false,
+        }).then((callback) => {
+            setIsLoading(false);
+            if (callback?.ok) {
+                toast.success('Logged in successfully');
+                router.refresh();
+                LoginModal.onClose();
+            }
+            if (callback?.error) {
+                toast.error(callback.error);
+            }
+        })
     };
     const bodyContent = (
         <div className="flex flex-col gap-4">
@@ -49,7 +55,7 @@ const LoginModal = () => {
                 subtitle="Login to your account "
             />
             <Input id="email" label="Email" disabled={isLoading} register={register} errors={errors} required />
-            
+
             <Input id="password" type="password" label="Password" disabled={isLoading} register={register} errors={errors} required />
         </div>
     );

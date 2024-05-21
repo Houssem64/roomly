@@ -6,9 +6,12 @@ import { useCallback, useState } from "react";
 import MenuItem from "@/app/components/Navbar/MenuItem";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
+import { User } from "@prisma/client";
+interface UserMenuProps {
+    currentUser?: User | null;
+}
 
-
-const UserMenu = () => {
+const UserMenu: React.FC<UserMenuProps> = () => {
     const registerModal = useRegisterModal();
     const LoginModal = useLoginModal();
     const [isMenuOpen, setIsMenuOpen] = useState(false)
