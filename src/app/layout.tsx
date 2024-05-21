@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/app/components/Navbar/NavBar";
+
 import RegisterModal from "./components/Modals/RegisterModal";
 import LoginModal from "./components/Modals/LoginModal";
+import RentModal from "./components/Modals/RentModal";
+
 import ToasterProvider from "./providers/ToasterProvider";
 import getCurrentUser from "./actions/getCurrentUser";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -26,6 +30,7 @@ export default async function RootLayout({
         <ToasterProvider />
         <RegisterModal />
         <LoginModal />
+        <RentModal />
         <NavBar currentUser={currentUser} />
         {children}</body>
     </html>
