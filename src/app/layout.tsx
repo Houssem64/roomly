@@ -5,6 +5,7 @@ import NavBar from "@/app/components/Navbar/NavBar";
 import RegisterModal from "./components/Modals/RegisterModal";
 import LoginModal from "./components/Modals/LoginModal";
 import ToasterProvider from "./providers/ToasterProvider";
+import getCurrentUser from "./actions/getCurrentUser";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -12,18 +13,20 @@ export const metadata: Metadata = {
   description: "Property rental made easy",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const currentUser = await getCurrentUser();
+
   return (
     <html lang="en">
       <body className={inter.className}>
         <ToasterProvider />
         <RegisterModal />
         <LoginModal />
-        <NavBar />
+        <NavBar currentUser={currentUser} />
         {children}</body>
     </html>
   );
