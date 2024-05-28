@@ -8,3 +8,9 @@ body,
   height: 100%;
   font-family: "Roboto", sans-serif;
 }
+.leaflet-bottom,
+.leflet-control,
+.leaflet-pane,
+.leaflet-top {
+  z-index: 0 !important;
+}
