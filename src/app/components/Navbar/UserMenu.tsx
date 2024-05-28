@@ -7,37 +7,22 @@ import MenuItem from "@/app/components/Navbar/MenuItem";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import { User } from "@prisma/client";
-import useRentModal from "@/app/hooks/useRentModal";
 interface UserMenuProps {
     currentUser?: User | null;
 }
 
-const UserMenu: React.FC<UserMenuProps> = ({currentUser}) => {
-    
+const UserMenu: React.FC<UserMenuProps> = () => {
     const registerModal = useRegisterModal();
     const LoginModal = useLoginModal();
-    const rentModal = useRentModal();
-
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const toggleMenu = useCallback(() => {
         setIsMenuOpen((value) => !value)
     }, [])
-
-    const onRent = useCallback(() => {
-        if (!currentUser){
-           return  LoginModal.onOpen();
-        }
-
-       
-
-        rentModal.onOpen();
-
-    },[currentUser, LoginModal,rentModal]);
     return (<div className="relative">
         <div className="flex flex-row items-center gap-3">
             <div
                 className="hidden md:block text-sm font-semibold px-4 py-3 rounded-full hover:bg-netral-100 transition cursor-pointer"
-                onClick={onRent}
+                onClick={() => { }}
             > Rent your Home</div>
             <div onClick={toggleMenu} className="p-4 md:py-1 md:px-2 border-[1px] border-neutral-700 flex flex-row items-center gap-3 rounded-full cursor-pointer hover:shadow-md transition">
                 <AiOutlineMenu />
