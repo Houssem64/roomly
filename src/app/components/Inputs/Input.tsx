@@ -12,6 +12,14 @@ interface InputProps {
     register: UseFormRegister<FieldValues>;
     errors: FieldErrors
 }
+const TNDSvg = () => {
+    const svg = (
+        <svg width="50" height="50" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <text x="10" y="30" fontFamily="Arial, Helvetica, sans-serif" fontSize="25" fill="black">TND</text>
+        </svg>
+    );
+    return svg;
+};
 
 const Input: React.FC<InputProps> = ({
 
@@ -27,7 +35,7 @@ const Input: React.FC<InputProps> = ({
     return (
 
         <div className="w-full relative">
-            {formatPrice && (<BiDollar className="text-neutral-700 absolute top-5 left-2" />)}
+            {formatPrice && (<label className=" absolute top-5 translate-y-2 left-2 -translate-x-2 " ><TNDSvg /></label>)}
             <input
                 id={id}
                 type={type}
@@ -55,14 +63,14 @@ const Input: React.FC<InputProps> = ({
             <label
                 className={`
             absolute 
-            text-md
+            text-sm
             duration-150
             transform
             -translate-y-3
             top-5
             z-10
             origin-[0]
-            ${formatPrice ? 'left-19' : 'left-4'}
+            ${formatPrice ? 'left-9' : 'left-4'}
             peer-placeholder-shown:scale-100
             peer-placeholder-shaown:translate-y-0
             peer-focus:scale-75
