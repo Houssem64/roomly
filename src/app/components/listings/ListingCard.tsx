@@ -76,7 +76,13 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </div>
             <div className="flex flex-row items-center gap-1 flex-nowrap">
                 <div className="font-semibold text-lg">{price} TND </div>
-                {!reservation && (<div className="font-normal text-[12px]">per Night</div>)}
+                {!reservation && (
+                    <div className="font-normal text-[12px]">
+                        {(data.category === "Villa" || data.category === "Vacation") ? "per Night" : "per Month"}
+                    </div>
+                )}
+
+
             </div>
             {onAction && actionLabel && (<Button disabled={disabled} small label={actionLabel} onClick={handleCancel} />)}
         </div>

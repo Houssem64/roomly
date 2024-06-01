@@ -25,7 +25,7 @@ const Input: React.FC<InputProps> = ({
 
     id,
     label,
-    type = 'text',
+    type,
     disabled,
     formatPrice,
     required,
@@ -36,30 +36,57 @@ const Input: React.FC<InputProps> = ({
 
         <div className="w-full relative">
             {formatPrice && (<label className=" absolute top-5 translate-y-2 left-2 -translate-x-2 " ><TNDSvg /></label>)}
-            <input
+            {type === 'textarea' ? (
+                <textarea
+                    id={id}
+
+                    disabled={disabled}
+                    {...register(id, { required })}
+                    placeholder=" "
+                    className={` 
+             peer
+             w-full
+             p-4
+             pt-6
+             font-light
+             bg-white
+             border-2
+             rounded-md
+             outline-none
+             transition
+             disabled:opacity-70
+             disabled:cursor-not-allowed
+             ${type == 'textarea' ? 'break-words text-wrap resize-none h-[200px]' : ''}
+             ${formatPrice ? 'pl-9' : 'pl-4'}
+             ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
+             ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
+             `}
+                />
+            ) : (<input
                 id={id}
                 type={type}
                 disabled={disabled}
                 {...register(id, { required })}
                 placeholder=" "
                 className={` 
-                peer
-                w-full
-                p-4
-                pt-6
-                font-light
-                bg-white
-                border-2
-                rounded-md
-                outline-none
-                transition
-                disabled:opacity-70
-                disabled:cursor-not-allowed
-                ${formatPrice ? 'pl-9' : 'pl-4'}
-                ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
-                ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
-                `}
-            />
+            peer
+            w-full
+            p-4
+            pt-6
+            font-light
+            bg-white
+            border-2
+            rounded-md
+            outline-none
+            transition
+            disabled:opacity-70
+            disabled:cursor-not-allowed
+            ${type == 'textarea' ? 'break-words text-wrap h-[200px]' : ''}
+            ${formatPrice ? 'pl-9' : 'pl-4'}
+            ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
+            ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
+            `}
+            />)}
             <label
                 className={`
             absolute 

@@ -195,7 +195,7 @@ const RentModal = () => {
                 <Heading title="Describe your place" subtitle="short description" />
                 <Input id="title" label="Title" disabled={isLoading} register={register} errors={errors} required />
                 <hr />
-                <Input id="description" label="Description" disabled={isLoading} register={register} errors={errors} required />
+                <Input type="textarea" id="description" label="Description" disabled={isLoading} register={register} errors={errors} required />
 
             </div>
         )
