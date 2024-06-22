@@ -1,6 +1,6 @@
 "use client";
 
-import { SafeUser } from "@/app/types";
+import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { Listing, Reservation, User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
@@ -13,8 +13,8 @@ import TNDSvg from "../TNDSvg";
 
 
 interface ListingCardProps {
-    data: Listing;
-    reservation?: Reservation;
+    data: SafeListing;
+    reservation?: SafeReservation;
     onAction?: (action: string) => void;
     disabled?: boolean;
     actionLabel?: string;

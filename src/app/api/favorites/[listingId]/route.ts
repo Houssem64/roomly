@@ -36,7 +36,7 @@ export async function POST(
     return NextResponse.json(user)
 }
 export async function DELETE(
-    reguest: Request,
+    request: Request,
     { params }: { params: IParams }
 ) {
     const currentUser = await getCurrentUser()
@@ -57,5 +57,6 @@ export async function DELETE(
             favoriteIds
         }
     })
+
     return NextResponse.json(user)
 }

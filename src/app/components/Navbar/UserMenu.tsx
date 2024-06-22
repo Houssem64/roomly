@@ -2,7 +2,7 @@
 
 import { AiOutlineMenu } from "react-icons/ai";
 import Avatar from "@/app/components/Avatar";
-import { useCallback, useState } from "react";
+import { use, useCallback, useState } from "react";
 import MenuItem from "@/app/components/Navbar/MenuItem";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
@@ -10,12 +10,14 @@ import useLoginModal from "@/app/hooks/useLoginModal";
 import { signOut } from "next-auth/react";
 import { SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
+import { useRouter } from "next/navigation";
 
 interface UserMenuProps {
     currentUser?: SafeUser | null;
 }
 
 const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
+    const router = useRouter();
     const registerModal = useRegisterModal();
     const LoginModal = useLoginModal();
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -56,15 +58,19 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                             label="List a Property"
 
                         />
-                        <MenuItem onClick={() => { }}
-                            label="Reservations"
+                        <MenuItem onClick={() => router.push("/my-reservations")}
+                            label="My Reservations"
                         />
-                        <MenuItem onClick={() => { }}
+                        <MenuItem onClick={() => router.push("/my-properties")}
                             label="My Properties"
                         />
-                        <MenuItem onClick={() => { }}
+                        <MenuItem onClick={() => router.push("/property-reservations")}
+                            label="Your Property's Reservations"
+                        />
+                        <MenuItem onClick={() => router.push("/favorites")}
                             label="Favorites"
                         />
+
 
                         <hr />
                         <MenuItem onClick={() => signOut()}
