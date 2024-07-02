@@ -52,10 +52,19 @@ export const authOptions: NextAuthOptions = {
             // Allows callback URLs on the same origin
             else if (new URL(url).origin === baseUrl) return url
             return baseUrl
-        }
+        },
+  /*       async jwt({ token, user }) {
+            if (user) token.role = user.role;
+            return token;
+        },
+        async session({ session, token }) {
+            if (session?.user) session.user.role = token.role;
+            return session;
+        }, */
     },
     pages: {
         signIn: '/',
+
 
     },
     debug: process.env.NODE_ENV !== 'development',
