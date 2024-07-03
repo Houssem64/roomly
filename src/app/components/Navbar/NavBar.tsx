@@ -16,6 +16,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
     const params = usePathname();
     if (params === '/admin') return null;
+    if (params === '/admin/dashboard') return null;
     return (
         <div className="fixed w-full bg-white z-10 shadow-sm">
             <div className='py-4 border-b-[1px]  '>
