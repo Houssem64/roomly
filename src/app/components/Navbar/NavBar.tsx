@@ -1,5 +1,6 @@
 "use client";
 import React from 'react'
+import { usePathname } from 'next/navigation';
 import Container from '@/app/components/Container'
 import Logo from '@/app/components/Navbar/Logo'
 import Search from '@/app/components/Navbar/Search'
@@ -13,7 +14,9 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
-
+    const params = usePathname();
+    if (params === '/admin') return null;
+    if (params === '/admin/dashboard') return null;
     return (
         <div className="fixed w-full bg-white z-10 shadow-sm">
             <div className='py-4 border-b-[1px]  '>
