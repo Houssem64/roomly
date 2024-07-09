@@ -86,21 +86,24 @@ export default function Component() {
             const response = await fetch(`/api/listings/${listingId}`, {
                 method: 'DELETE',
             });
+
+            const data = await response.json();
+
             if (response.ok) {
-
+                // Remove the listing from the local state
                 setListings(listings.filter(listing => listing.id !== listingId));
-            } else {
 
-                console.error('Failed to delete listing');
+                // Show success message
+                toast.success(data.message || 'Listing deleted successfully');
+            } else {
+                throw new Error(data.error || 'Failed to delete listing');
             }
         } catch (error) {
-            toast.error('Error deleting listing');
+            // Show error message
+            toast.error(error instanceof Error ? error.message : 'Error deleting listing');
             console.error('Error deleting listing:', error);
-        } finally {
-            toast.success('Listing deleted successfully');
         }
     };
-
     return (
         <div className="flex flex-col -translate-y-24 ">
             <Toaster />
