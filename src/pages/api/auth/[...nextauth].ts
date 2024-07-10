@@ -22,6 +22,7 @@ export const authOptions: NextAuthOptions = {
             credentials: {
                 email: { label: 'email', type: 'text' },
                 password: { label: 'password', type: 'password' },
+                phoneNumber: { label: 'phone number', type: 'text' },
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
@@ -53,14 +54,14 @@ export const authOptions: NextAuthOptions = {
             else if (new URL(url).origin === baseUrl) return url
             return baseUrl
         },
-  /*       async jwt({ token, user }) {
-            if (user) token.role = user.role;
-            return token;
-        },
-        async session({ session, token }) {
-            if (session?.user) session.user.role = token.role;
-            return session;
-        }, */
+        /*       async jwt({ token, user }) {
+                  if (user) token.role = user.role;
+                  return token;
+              },
+              async session({ session, token }) {
+                  if (session?.user) session.user.role = token.role;
+                  return session;
+              }, */
     },
     pages: {
         signIn: '/',

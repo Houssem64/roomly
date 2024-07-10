@@ -22,6 +22,7 @@ interface ListingInfoProps {
     guestCount: number;
     bathroomCount: number;
     locationValue: string;
+    phoneNumber: string;
 }
 const tunisiaRegions = [
     { region: "Ariana", latitude: 36.8663, longitude: 10.1644 },
@@ -59,7 +60,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
     roomCount,
     guestCount,
     bathroomCount,
-    locationValue
+    locationValue, phoneNumber
 }) => {
     const location = locationValue
     const region = tunisiaRegions.find((region) => region.region === location);
@@ -100,7 +101,10 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             <hr />
             <div className="text-lg font-light text-neutral-500">
                 {description}
+
             </div>
+            <hr />
+            <div className=" font-medium"> Contact Owner: <span className="font-extrabold"> {phoneNumber}</span></div>
             <hr />
             <Map center={coordinates} />
         </div>);

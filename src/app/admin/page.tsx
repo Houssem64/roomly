@@ -53,13 +53,13 @@ export default function Component() {
                 <div>
                     <Link href="#" prefetch={false}>
                         <Image src="/images/logo.png" alt="Logo" width={200} height={200} className="justify-center items-center mx-auto" />
-                        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-primary-foreground">Admin Portal</h2>
+                        <h2 className="mt-6 text-center text-3xl text-[#E2A399] font-bold tracking-tight ">Admin Portal</h2>
                     </Link>
                 </div>
                 <form className="space-y-6" action="#" method="POST">
                     <div>
-                        <label htmlFor="username" className="block text-sm font-medium text-primary-foreground">
-                            Username
+                        <label htmlFor="username" className="block text-sm font-bold text-[#E2A399]">
+                            Username:
                         </label>
                         <input
                             id="username"
@@ -72,8 +72,8 @@ export default function Component() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-primary-foreground">
-                            Password
+                        <label htmlFor="password" className="block text-sm font-bold text-[#E2A399]">
+                            Password:
                         </label>
                         <input
                             id="password"

@@ -30,6 +30,7 @@ interface ListingClientProps {
     currentUser?: SafeUser | null;
 }
 
+
 const ListingClient: React.FC<ListingClientProps> = ({
     listing,
     currentUser,
@@ -37,6 +38,23 @@ const ListingClient: React.FC<ListingClientProps> = ({
 }) => {
     const loginModal = useLoginModal();
     const router = useRouter();
+    /*   useEffect(() => {
+          const paymentResponse = fetch(
+              "https://api.preprod.konnect.network/v2/payments/init-payment", {
+              method: "POST",
+              headers: {
+                  "x-api-key": '6659a025a4e509be44c6aa64:bJVOc5H3YZuihT1lXrXd6RRu3J0G8',
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                  receiverWalletId: "6659a025a4e509be44c6aa68",
+                  amount: 1000,
+                  token: "TND"
+              }),
+          })
+          console.log(paymentResponse)
+  
+      }, []) */
     const disabledDates = useMemo(() => {
         let dates: Date[] = [];
         reservations.forEach((reservation) => {
@@ -56,6 +74,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
         if (!currentUser) {
             return loginModal.onOpen();
         }
+
         setIsLoading(true);
         axios.post(`/api/reservations`, {
             totalPrice,
@@ -112,7 +131,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
                         currentUser={currentUser}
                     />
                     <div className="grid grid-cols-1 md:grid-cols-7 md:gap-10 mt-6">
-                        <ListingInfo user={listing.user} category={category} description={listing.description} roomCount={listing.roomCount} guestCount={listing.guestCount} bathroomCount={listing.bathroomCount} locationValue={listing.locationValue} />
+                        <ListingInfo phoneNumber={listing.phoneNumber} user={listing.user} category={category} description={listing.description} roomCount={listing.roomCount} guestCount={listing.guestCount} bathroomCount={listing.bathroomCount} locationValue={listing.locationValue} />
                         <div className="order-first mb-10 md:order-last md:col-span-3">
                             <ListingReservation price={listing.price} totalPrice={totalPrice} onChangeDate={(value) => setDateRange(value)} category={listing.category} dateRange={dateRange} onSubmit={onCreateReservation} disabledDates={disabledDates} />
                         </div>
