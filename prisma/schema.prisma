@@ -17,6 +17,7 @@ model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   name String?
   email String? @unique
+  phoneNumber String? 
   emailVerified DateTime?
   image String?
   sessions      Session[]
@@ -68,7 +69,7 @@ model Listing {
   locationValue String
   userId String @db.ObjectId
   price Int
-
+  phoneNumber String?
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservation Reservation[]
 
@@ -84,6 +85,9 @@ model Reservation {
   endDate DateTime
   totalPrice Int
   createdAt DateTime @default(now())
+  //paymentRef   String?       @unique
+ // paymentStatus String @default("PENDING")
+ phoneNumber String?
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }

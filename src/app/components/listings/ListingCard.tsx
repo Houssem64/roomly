@@ -20,6 +20,7 @@ interface ListingCardProps {
     actionLabel?: string;
     actionId?: string;
     currentUser?: SafeUser | null;
+    phoneNumber: string;
 
 }
 const ListingCard: React.FC<ListingCardProps> = ({
@@ -29,7 +30,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     disabled,
     actionLabel,
     actionId = "",
-    currentUser
+    currentUser, phoneNumber
 }) => {
     const router = useRouter();
     const handleCancel = useCallback(
@@ -74,7 +75,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <div className="font-light text-neutral-500">
                 {reservationDate || data.category}
             </div>
+            <span className="text-sm flex-nowrap">
+                Number: {data.phoneNumber || phoneNumber}
+            </span>
             <div className="flex flex-row items-center gap-1 flex-nowrap">
+
                 <div className="font-semibold text-lg">{price} TND </div>
                 {!reservation && (
                     <div className="font-normal text-[12px]">

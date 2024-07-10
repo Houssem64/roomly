@@ -27,7 +27,8 @@ export async function POST(
             guestCount,
             bathroomCount,
             category,
-            userId: currentUser.id
+            userId: currentUser.id,
+            phoneNumber: currentUser?.phoneNumber
         }
     })
     return NextResponse.json(listing)
