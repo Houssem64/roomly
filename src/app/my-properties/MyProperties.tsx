@@ -42,7 +42,7 @@ const MyPropertiesClient: React.FC<MyReservationsProps> = ({
                     <ListingCard
                         key={listing.id}
                         data={listing}
-
+                        phoneNumber={listing.phoneNumber}
                         actionId={listing.id}
                         onAction={onCancel}
                         disabled={deletingId === listing.id}

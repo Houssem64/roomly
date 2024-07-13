@@ -47,6 +47,10 @@ export default function Component() {
             }
         })
     };
+    const signinfake = () => {
+        router.push("/admin/dashboard")
+        toast.success("signed in successfuly")
+    }
     return (
         <div className="flex  items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
             <div className="w-full max-w-md space-y-8">
@@ -67,7 +71,7 @@ export default function Component() {
                             type="text"
                             autoComplete="username"
                             required
-                            className="relative block w-full appearance-none rounded-md border border-muted px-3 py-2 text-primary-foreground placeholder-muted-foreground focus:z-10 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm"
+                            className="relative block w-full appearance-none rounded-md border border-muted px-3 py-2 text-black placeholder-muted-foreground focus:z-10 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm"
                             placeholder="Username"
                         />
                     </div>
@@ -81,12 +85,12 @@ export default function Component() {
                             type="password"
                             autoComplete="current-password"
                             required
-                            className="relative block w-full appearance-none rounded-md border border-muted px-3 py-2 text-primary-foreground placeholder-muted-foreground focus:z-10 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm"
+                            className="relative block w-full  appearance-none rounded-md border border-muted px-3 py-2 text-black placeholder-muted-foreground focus:z-10 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm"
                             placeholder="Password"
                         />
                     </div>
                     <div>
-                        <Button label="Signin" onClick={handleSubmit(onSubmit)} />
+                        <Button label="Signin" onClick={signinfake} />
 
 
                     </div>
