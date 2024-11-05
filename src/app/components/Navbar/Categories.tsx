@@ -3,6 +3,7 @@ import Container from "../Container";
 import { PiStudent } from "react-icons/pi";
 import { PiOfficeChair } from "react-icons/pi";
 import { FaStore } from "react-icons/fa";
+import { Suspense } from 'react';
 
 import { PiBuildingApartment } from "react-icons/pi";
 import CategoryBox from "../CategoryBox";
@@ -10,6 +11,7 @@ import { TbBeach } from "react-icons/tb";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LiaWarehouseSolid } from "react-icons/lia";
 import { GiFamilyHouse } from "react-icons/gi";
+import Loader from "../Loader";
 
 
 
@@ -67,17 +69,20 @@ const Categories = () => {
     if (!isMainPage) {
         return null;
     }
-    return (<Container>
-        <div className="pt-4 flex flex-row items-center justify-between overflow-x-auto" >
-            {categories.map((item) => (
-                <CategoryBox
-                    key={item.label}
-                    label={item.label}
-                    selected={category === item.label}
-                    icon={item.icon}
-                />))}
-        </div>
-    </Container>);
+    return (
+        <Suspense fallback={<Loader />}>
+            <Container>
+                <div className="pt-4 flex flex-row items-center justify-between overflow-x-auto" >
+                    {categories.map((item) => (
+                        <CategoryBox
+                            key={item.label}
+                            label={item.label}
+                            selected={category === item.label}
+                            icon={item.icon}
+                        />))}
+                </div>
+            </Container>
+        </Suspense>);
 }
 
 export default Categories;

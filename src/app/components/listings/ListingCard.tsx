@@ -20,7 +20,7 @@ interface ListingCardProps {
     actionLabel?: string;
     actionId?: string;
     currentUser?: SafeUser | null;
-    phoneNumber: string;
+    phoneNumber?: string | null;
 
 }
 const ListingCard: React.FC<ListingCardProps> = ({

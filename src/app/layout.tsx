@@ -8,6 +8,8 @@ import ToasterProvider from "./providers/ToasterProvider";
 import getCurrentUser from "./actions/getCurrentUser";
 import RentModal from "./components/Modals/RentModal";
 import SearchModal from "./components/Modals/SearchModal";
+import { Suspense } from "react";
+import Loader from "./components/Loader";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,6 +27,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+
         <ToasterProvider />
         <RegisterModal />
         <SearchModal />
@@ -33,7 +36,7 @@ export default async function RootLayout({
         <NavBar currentUser={currentUser} />
         <div className="pb-20 pt-28">
 
-          {children}</div></body>
-    </html>
+          {children} </div></body>
+    </html >
   );
 }

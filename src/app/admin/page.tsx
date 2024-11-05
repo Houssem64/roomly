@@ -2,16 +2,17 @@
 import Image from "next/image"
 import Link from "next/link"
 import Button from "../components/Button";
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
+import LoadingSpinner from "../components/Loader"; // A fallback component
 
 
 
 
-export default function Component() {
+function Component() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -29,23 +30,20 @@ export default function Component() {
     });
 
 
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         setIsLoading(true);
-
-        signIn('credentials', {
-            ...data,
-            redirect: false,
-        }).then((callback) => {
+        try {
+            await signIn("credentials", {
+                ...data,
+                redirect: false,
+            });
+            router.push("/dashboard");
+        } catch (error) {
+            toast.error("Error signing in");
+            console.error("Error signing in:", error);
+        } finally {
             setIsLoading(false);
-            if (callback?.ok) {
-                toast.success('Logged in successfully');
-                router.refresh();
-
-            }
-            if (callback?.error) {
-                toast.error(callback.error);
-            }
-        })
+        }
     };
     const signinfake = () => {
         router.push("/admin/dashboard")
@@ -60,7 +58,7 @@ export default function Component() {
                         <h2 className="mt-6 text-center text-3xl text-[#E2A399] font-bold tracking-tight ">Admin Portal</h2>
                     </Link>
                 </div>
-                <form className="space-y-6" action="#" method="POST">
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div>
                         <label htmlFor="username" className="block text-sm font-bold text-[#E2A399]">
                             Username:
@@ -100,7 +98,13 @@ export default function Component() {
         </div>
     )
 }
-
+export default function Page() {
+    return (
+        <Suspense fallback={<LoadingSpinner />}>
+            <Component />
+        </Suspense>
+    );
+}
 function MountainIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg

@@ -1,8 +1,9 @@
 "use client";
 import { IconType } from 'react-icons';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { Suspense, useCallback } from 'react';
 import qs from "query-string";
+import Loader from './Loader';
 interface CategoryBoxProps {
     icon: IconType;
     label: string;
@@ -31,7 +32,10 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ icon: Icon, label, selected }
         }, { skipNull: true });
         router.push(url);
     }, [label, params, router])
-    return (<div onClick={handleClick} className={`
+    return (
+        <Suspense fallback={<Loader />}>
+
+            <div onClick={handleClick} className={`
                             flex
                             flex-col
                             items-center
@@ -45,9 +49,9 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ icon: Icon, label, selected }
                             ${selected ? "border-b-neutral-800" : "border-b-transparent"}
                             ${selected ? "text-neutral-800" : "text-neutral-500"}
                             `}>
-        <Icon size={26} />
-        <div className='font-medium text-sm'>{label}</div>
-    </div>);
+                <Icon size={26} />
+                <div className='font-medium text-sm'>{label}</div>
+            </div> </Suspense>);
 }
 
 export default CategoryBox;

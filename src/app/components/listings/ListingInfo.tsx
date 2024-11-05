@@ -22,7 +22,7 @@ interface ListingInfoProps {
     guestCount: number;
     bathroomCount: number;
     locationValue: string;
-    phoneNumber: string;
+    phoneNumber: string | null;
 }
 const tunisiaRegions = [
     { region: "Ariana", latitude: 36.8663, longitude: 10.1644 },

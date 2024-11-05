@@ -10,8 +10,9 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import Loader from "@/app/components/Loader";
 
 
 interface User {
@@ -105,148 +106,150 @@ export default function Component() {
         }
     };
     return (
-        <div className="flex flex-col -translate-y-24 ">
-            <Toaster />
-            <header className="bg-background border-b flex items-center justify-between px-4 sm:px-6 h-16">
-                <Link href="#" className="flex items-center gap-2" prefetch={false}>
-                    <Image src="/images/logo.png" alt="Logo" width={200} height={200} className="justify-center items-center mx-auto" />
+        <Suspense fallback={<Loader />}>
+            <div className="flex flex-col -translate-y-24 ">
+                <Toaster />
+                <header className="bg-background border-b flex items-center justify-between px-4 sm:px-6 h-16">
+                    <Link href="#" className="flex items-center gap-2" prefetch={false}>
+                        <Image src="/images/logo.png" alt="Logo" width={200} height={200} className="justify-center items-center mx-auto" />
 
-                </Link>
+                    </Link>
 
-                <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="rounded-full">
-                                <Avatar className="w-8 h-8 border">
-                                    <AvatarImage src="/placeholder-user.jpg" />
-                                    <AvatarFallback>AD</AvatarFallback>
-                                </Avatar>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Profile</DropdownMenuItem>
-                            <DropdownMenuItem>Settings</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Logout</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </header>
-            <main className="flex-1 bg-muted/40 p-4 sm:p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <h1 className="text-2xl font-bold">Dashboard</h1>
                     <div className="flex items-center gap-2">
-
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-1">
-                                    <FilterIcon className="w-4 h-4" />
-                                    Filter
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                    <Avatar className="w-8 h-8 border">
+                                        <AvatarImage src="/placeholder-user.jpg" />
+                                        <AvatarFallback>AD</AvatarFallback>
+                                    </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem>Profile</DropdownMenuItem>
+                                <DropdownMenuItem>Settings</DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem>Active users</DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>Banned users</DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>Active listings</DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>Deleted listings</DropdownMenuCheckboxItem>
+                                <DropdownMenuItem>Logout</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
-                </div>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Users</CardTitle>
-                        <CardDescription>Manage user accounts</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>Ban</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {users.map(user => (
-                                    <TableRow key={user.id}>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <Avatar className="w-8 h-8 border">
-                                                    <AvatarImage src={user.image || "/placeholder-user.jpg"} />
-                                                    <AvatarFallback>{user.name?.charAt(0) || 'U'}</AvatarFallback>
-                                                </Avatar>
-                                                <div>
-                                                    <div className="font-medium">{user.name}</div>
-                                                    <div className="text-sm text-muted-foreground">{user.email}</div>
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>
-                                            <Button variant="ghost" size="icon" className="mx-auto" onClick={() => deleteUser(user.id)}>
-                                                <FaBan />
-                                            </Button>
-                                        </TableCell>
+                </header>
+                <main className="flex-1 bg-muted/40 p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h1 className="text-2xl font-bold">Dashboard</h1>
+                        <div className="flex items-center gap-2">
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm" className="gap-1">
+                                        <FilterIcon className="w-4 h-4" />
+                                        Filter
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuCheckboxItem>Active users</DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem>Banned users</DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem>Active listings</DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem>Deleted listings</DropdownMenuCheckboxItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    </div>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Users</CardTitle>
+                            <CardDescription>Manage user accounts</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Email</TableHead>
+                                        <TableHead>Ban</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-                <Card className="mt-6">
-                    <CardHeader>
-                        <CardTitle>Listings</CardTitle>
-                        <CardDescription>Manage property listings</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Title</TableHead>
-                                    <TableHead>Location</TableHead>
-                                    <TableHead>Price</TableHead>
-                                    <TableHead>Delete</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {listings.map(listing => (
-                                    <TableRow key={listing.id}>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <Image src={listing.imageSrc} width={64} height={64} alt="Listing" className="rounded-md" />
-                                                <div>
-                                                    <div className="font-medium">{listing.title}</div>
-                                                    <div className="text-sm text-muted-foreground">{listing.description}</div>
+                                </TableHeader>
+                                <TableBody>
+                                    {users.map(user => (
+                                        <TableRow key={user.id}>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar className="w-8 h-8 border">
+                                                        <AvatarImage src={user.image || "/placeholder-user.jpg"} />
+                                                        <AvatarFallback>{user.name?.charAt(0) || 'U'}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <div className="font-medium">{user.name}</div>
+                                                        <div className="text-sm text-muted-foreground">{user.email}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>{listing.locationValue}</TableCell>
-                                        <TableCell>${listing.price}</TableCell>
-                                        <TableCell>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon">
-                                                        <MoveVerticalIcon className="w-4 h-4" />
-                                                        <span className="sr-only">Listing actions</span>
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem>View Listing</DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => deleteListing(listing.id)}>Delete Listing</DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
+                                            </TableCell>
+                                            <TableCell>{user.email}</TableCell>
+                                            <TableCell>
+                                                <Button variant="ghost" size="icon" className="mx-auto" onClick={() => deleteUser(user.id)}>
+                                                    <FaBan />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                    <Card className="mt-6">
+                        <CardHeader>
+                            <CardTitle>Listings</CardTitle>
+                            <CardDescription>Manage property listings</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Title</TableHead>
+                                        <TableHead>Location</TableHead>
+                                        <TableHead>Price</TableHead>
+                                        <TableHead>Delete</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            </main>
-        </div>
+                                </TableHeader>
+                                <TableBody>
+                                    {listings.map(listing => (
+                                        <TableRow key={listing.id}>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <Image src={listing.imageSrc} width={64} height={64} alt="Listing" className="rounded-md" />
+                                                    <div>
+                                                        <div className="font-medium">{listing.title}</div>
+                                                        <div className="text-sm text-muted-foreground">{listing.description}</div>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>{listing.locationValue}</TableCell>
+                                            <TableCell>${listing.price}</TableCell>
+                                            <TableCell>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon">
+                                                            <MoveVerticalIcon className="w-4 h-4" />
+                                                            <span className="sr-only">Listing actions</span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem>View Listing</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => deleteListing(listing.id)}>Delete Listing</DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </main>
+            </div>
+        </Suspense>
     )
 }
 

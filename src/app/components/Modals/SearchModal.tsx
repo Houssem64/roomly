@@ -3,7 +3,7 @@ import qs from "query-string"
 import useSearchModal from "@/app/hooks/useSearchModal"
 import Modal from "@/app/components/Modals/Modal"
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { Range } from "react-date-range";
 import dynamic from "next/dynamic";
 import CountrySelect, { CountrySelectValue } from "../Inputs/CountrySelect";
@@ -11,6 +11,7 @@ import { formatISO } from "date-fns";
 import Heading from "../Heading";
 import Calendar from "../Inputs/Calendar";
 import Counter from "../Inputs/Counter";
+import Loader from "../Loader";
 
 
 enum STEPS {
@@ -151,14 +152,17 @@ const searchModal = () => {
         );
     }
     return (
-        <Modal
-            body={bodyContent}
-            isOpen={searchModal.isOpen}
-            onClose={searchModal.onClose}
-            onSubmit={onSubmit}
-            title="Search"
-            actionLabel={actionLabel}
-        />
+        <Suspense fallback={<Loader />}>
+            <Modal
+                body={bodyContent}
+                isOpen={searchModal.isOpen}
+                onClose={searchModal.onClose}
+                onSubmit={onSubmit}
+                title="Search"
+                actionLabel={actionLabel}
+            />
+        </Suspense>
+
     )
 }
 
