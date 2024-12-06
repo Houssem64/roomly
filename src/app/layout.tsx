@@ -1,42 +1,49 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import NavBar from "@/app/components/Navbar/NavBar";
-import RegisterModal from "./components/Modals/RegisterModal";
-import LoginModal from "./components/Modals/LoginModal";
-import ToasterProvider from "./providers/ToasterProvider";
-import getCurrentUser from "./actions/getCurrentUser";
-import RentModal from "./components/Modals/RentModal";
-import SearchModal from "./components/Modals/SearchModal";
-import { Suspense } from "react";
-import Loader from "./components/Loader";
-const inter = Inter({ subsets: ["latin"] });
+import { Suspense } from 'react';
+import { Inter } from 'next/font/google';
+import { Toaster } from 'react-hot-toast';
 
-export const metadata: Metadata = {
-  title: "Roomly",
-  description: "Property rental made easy",
+import Navbar from './components/Navbar/NavBar';
+import RegisterModal from './components/Modals/RegisterModal';
+import LoginModal from './components/Modals/LoginModal';
+import RentModal from './components/Modals/RentModal';
+import SearchModal from './components/Modals/SearchModal';
+
+import './globals.css';
+import getCurrentUser from './actions/getCurrentUser';
+import ErrorBoundary from './components/ErrorBoundary';
+import LoadingState from './loading';
+
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata = {
+  title: 'Roomly',
+  description: 'Property rental platform',
 };
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   const currentUser = await getCurrentUser();
 
   return (
     <html lang="en">
       <body className={inter.className}>
-
-        <ToasterProvider />
-        <RegisterModal />
-        <SearchModal />
-        <LoginModal />
-        <RentModal />
-        <NavBar currentUser={currentUser} />
-        <div className="pb-20 pt-28">
-
-          {children} </div></body>
-    </html >
+        <ErrorBoundary>
+          <Toaster />
+          <RegisterModal />
+          <LoginModal />
+          <RentModal />
+          <SearchModal />
+          <Navbar currentUser={currentUser} />
+          <div className="pb-20 pt-28">
+            <Suspense fallback={<LoadingState />}>
+              {children}
+            </Suspense>
+          </div>
+        </ErrorBoundary>
+      </body>
+    </html>
   );
 }

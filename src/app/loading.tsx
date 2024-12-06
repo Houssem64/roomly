@@ -1,9 +1,14 @@
-"use client";
-
+import Container from "./components/Container";
 import Loader from "./components/Loader";
 
-const Loading = () => {
-    return (<Loader />);
-}
+const LoadingState = () => {
+  return (
+    <Container>
+      <div className="h-[60vh] flex flex-col justify-center items-center">
+        <Loader />
+      </div>
+    </Container>
+  );
+};
 
-export default Loading;
+export default LoadingState;

@@ -21,7 +21,8 @@ interface ListingCardProps {
     actionId?: string;
     currentUser?: SafeUser | null;
     phoneNumber?: string | null;
-
+    onSecondaryAction?: () => void;
+    secondaryActionLabel?: string;
 }
 const ListingCard: React.FC<ListingCardProps> = ({
     data,

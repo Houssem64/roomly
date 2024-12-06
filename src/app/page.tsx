@@ -1,36 +1,48 @@
-import Container from "./components/Container";
-import EmptyState from "./components/EmptyState";
-import getListings, { IListingsParams } from "./actions/getListings";
-import ListingCard from "./components/listings/ListingCard";
-
+import HomeComponent from "./components/HomeComponent";
+import getListings from "./actions/getListings";
 import getCurrentUser from "./actions/getCurrentUser";
+import ClientOnly from "./components/ClientOnly";
+import { Suspense } from "react";
+import Loader from "./components/Loader";
+import EmptyState from "./components/EmptyState";
 
-interface HomeProps {
-  searchParams: IListingsParams;
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export default async function Home() {
+  try {
+    const listings = await getListings({});
+    const currentUser = await getCurrentUser();
+
+    if (!listings.length) {
+      return (
+        <ClientOnly>
+          <EmptyState 
+            title="No properties found" 
+            subtitle="Looks like there are no properties available." 
+          />
+        </ClientOnly>
+      );
+    }
+
+    return (
+      <ClientOnly>
+        <Suspense fallback={<Loader />}>
+          <HomeComponent 
+            listings={listings}
+            currentUser={currentUser}
+          />
+        </Suspense>
+      </ClientOnly>
+    );
+  } catch (error) {
+    console.error('Error:', error);
+    return (
+      <ClientOnly>
+        <EmptyState 
+          title="Error" 
+          subtitle="Something went wrong while loading properties" 
+        />
+      </ClientOnly>
+    );
+  }
 }
-
-const Home = async ({ searchParams }: HomeProps) => {
-  const isEmpty = true;
-  const listings = await getListings(searchParams);
-  const currentUser = await getCurrentUser();
-
-  if (listings.length === 0) return (<EmptyState showReset />);
-
-
-  return (
-    <Container>
-      <div className="pt-24 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8 ">
-        {listings.map((listing: any) => {
-          return (
-            <ListingCard currentUser={currentUser} key={listing.id} data={listing} />
-          )
-        }
-        )
-        }
-      </div>
-    </Container>
-  );
-}
-
-
-export default Home;
