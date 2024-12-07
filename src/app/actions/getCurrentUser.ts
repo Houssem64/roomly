@@ -12,44 +12,29 @@ export async function getSession() {
 export default async function getCurrentUser() {
     try {
         const session = await getSession();
-        if (!session?.user?.email) {
+        if (session?.user?.email) {
+            null;
+        }
+        const currentUser = await prisma.user.findUnique(
+            {
+                where: {
+                    email: session?.user?.email as string
+                }
+            }
+        )
+        if (!currentUser) {
             return null;
         }
-
-        // Check if user is admin
-        const admin = await prisma.admin.findUnique({
-            where: {
-                email: session.user.email
-            }
-        });
-
-        if (admin) {
-            return {
-                ...admin,
-                role: 'admin',
-                createdAt: admin.createdAt.toISOString(),
-                updatedAt: admin.updatedAt.toISOString(),
-            };
-        }
-
-        // If not admin, get regular user
-        const user = await prisma.user.findUnique({
-            where: {
-                email: session.user.email
-            }
-        });
-
-        if (!user) {
-            return null;
-        }
-
         return {
-            ...user,
-            createdAt: user.createdAt.toISOString(),
-            updatedAt: user.updatedAt.toISOString(),
-            emailVerified: user.emailVerified?.toISOString() || null,
+            ...currentUser,
+            createdAt: currentUser.createdAt.toISOString(),
+            updatedAt: currentUser.updatedAt.toISOString(),
+            emailVerified: currentUser.emailVerified?.toISOString() || null,
+            
+
         };
-    } catch (error) {
+    } catch (error: any) {
         return null;
     }
+
 }
