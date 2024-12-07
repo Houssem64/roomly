@@ -5,7 +5,7 @@
     <h1 align="center">ROOMLY</h1>
 </p>
 <p align="center">
-    <em><code>► INSERT-TEXT-HERE</code></em>
+    <em><code>A modern property rental and management platform built with Next.js 14</code></em>
 </p>
 <p align="center">
 	<img src="https://img.shields.io/github/license/Houssem64/roomly?style=flat&color=0080ff" alt="license">
