@@ -5,7 +5,8 @@ import ClientOnly from "./components/ClientOnly";
 import { Suspense } from "react";
 import Loader from "./components/Loader";
 import { SafeUser } from "./types";
-
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 interface HomeProps {
   searchParams: IListingsParams
 }
