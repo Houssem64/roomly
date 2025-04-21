@@ -1,5 +1,6 @@
 <p align="center">
   <img src="https://cdn-icons-png.flaticon.com/512/6295/6295417.png" width="100" />
+<p> Admin panel credentials : admin@roomly.com | password : 123 </p>
 </p>
 <p align="center">
     <h1 align="center">ROOMLY</h1>
