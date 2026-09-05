@@ -87,15 +87,28 @@ model Reservation {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   userId String @db.ObjectId
   listingId String @db.ObjectId
-  startDate DateTime  
+  startDate DateTime
   endDate DateTime
   totalPrice Int
   createdAt DateTime @default(now())
-  //paymentRef   String?       @unique
- // paymentStatus String @default("PENDING")
+
+  // Paiement en ligne (Konnect).
+  // paymentRef    : identifiant du paiement renvoye par Konnect.
+  // paymentStatus : PENDING (en attente) | COMPLETED (paye) | FAILED (echoue).
+  //
+  // Index simple et non "unique" a dessein : Prisma ecrit explicitement null
+  // dans ce champ tant qu'aucun paiement n'a ete lance, et MongoDB considere
+  // plusieurs null comme des doublons. L'unicite reelle est garantie par
+  // Konnect, qui ne reutilise jamais une reference.
+  paymentRef    String?
+  paymentStatus String  @default("PENDING")
+
  phoneNumber String?
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([paymentRef])
+  @@index([listingId, startDate])
 }
 
 

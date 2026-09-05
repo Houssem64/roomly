@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { ErrorResponse, SuccessResponse } from "@/app/types";
+import { deleteLocalUpload } from "@/app/libs/uploads";
 
 interface IParams {
   listingId?: string;
@@ -57,6 +58,9 @@ export async function DELETE(
         id: listingId,
       },
     });
+
+    // On libère aussi la photo stockée dans public/uploads (jamais bloquant).
+    await deleteLocalUpload(listing.imageSrc);
 
     return NextResponse.json(
       { 

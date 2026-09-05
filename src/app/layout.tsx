@@ -7,6 +7,7 @@ import RegisterModal from './components/Modals/RegisterModal';
 import LoginModal from './components/Modals/LoginModal';
 import RentModal from './components/Modals/RentModal';
 import SearchModal from './components/Modals/SearchModal';
+import { SiteChrome, PageArea } from './components/SiteChrome';
 
 import './globals.css';
 import getCurrentUser from './actions/getCurrentUser';
@@ -32,16 +33,21 @@ export default async function RootLayout({
       <body className={inter.className}>
         <ErrorBoundary>
           <Toaster />
-          <RegisterModal />
-          <LoginModal />
-          <RentModal />
-          <SearchModal />
-          <Navbar currentUser={currentUser} />
-          <div className="pb-20 pt-28">
+
+          {/* Habillage du site public : absent de l'espace d'administration. */}
+          <SiteChrome>
+            <RegisterModal />
+            <LoginModal />
+            <RentModal />
+            <SearchModal />
+            <Navbar currentUser={currentUser} />
+          </SiteChrome>
+
+          <PageArea>
             <Suspense fallback={<LoadingState />}>
               {children}
             </Suspense>
-          </div>
+          </PageArea>
         </ErrorBoundary>
       </body>
     </html>

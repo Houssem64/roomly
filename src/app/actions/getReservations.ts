@@ -1,14 +1,21 @@
 import prisma from '@/app/libs/prismadb';
+import { BLOCKING_PAYMENT_STATUSES } from '@/app/libs/konnect';
 
 
 interface IParams {
     listingId?: string;
     userId?: string;
     authorId?: string;
+    /**
+     * Ne remonter que les réservations qui bloquent réellement le calendrier
+     * (paiement réussi ou en attente). Utilisé sur la fiche d'un bien : une
+     * réservation dont le paiement a échoué ne doit pas condamner les dates.
+     */
+    blockingOnly?: boolean;
 }
 export default async function getReservations(params: IParams) {
     try {
-        const { listingId, userId, authorId } = params;
+        const { listingId, userId, authorId, blockingOnly } = params;
         const query: any = {}
         if (listingId) {
             query.listingId = listingId;
@@ -18,6 +25,9 @@ export default async function getReservations(params: IParams) {
         }
         if (authorId) {
             query.listing = { userId: authorId };
+        }
+        if (blockingOnly) {
+            query.paymentStatus = { in: [...BLOCKING_PAYMENT_STATUSES] };
         }
         const reservations = await prisma.reservation.findMany({
             where: query,

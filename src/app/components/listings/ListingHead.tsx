@@ -31,8 +31,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             <div className="w-full h-[60vh] overflow-hidden rounded-xl relative ">
                 <Image
                     alt="Image"
-                    src={imageSrc}
+                    src={imageSrc || "/images/placeholder.jpg"}
                     fill
+                    sizes="(max-width: 768px) 100vw, 66vw"
                     className="object-cover w-full   "
                     quality={100}
                     loading='lazy'

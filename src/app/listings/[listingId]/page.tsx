@@ -14,7 +14,8 @@ interface IParams {
 const ListingsPage = async ({ params }: { params: IParams }) => {
     const listing = await getListingById(params);
     const currentUser = await getCurrentUser();
-    const reservations = await getReservations(params)
+    // blockingOnly : les paiements échoués ne condamnent pas les dates.
+    const reservations = await getReservations({ ...params, blockingOnly: true })
     if (!listing) {
         return <EmptyState />;
     }

@@ -1,32 +1,63 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
-import getCurrentUser from '@/app/actions/getCurrentUser';
+import getCurrentAdmin from '@/app/actions/getCurrentAdmin';
+import { deleteLocalUpload } from '@/app/libs/uploads';
+
 interface IParams {
     userId?: string;
 }
-export async function DELETE(request: Request,
-    { params }: { params: IParams }) {
+
+/**
+ * Suppression d'un compte par un administrateur.
+ *
+ * Supprimer un compte supprime aussi, en cascade, ses annonces et ses
+ * réservations (voir onDelete: Cascade dans prisma/schema.prisma). On en
+ * profite pour effacer les photos correspondantes du dossier public/uploads,
+ * afin de ne pas laisser de fichiers orphelins.
+ */
+export async function DELETE(
+    request: Request,
+    { params }: { params: IParams }
+) {
+    const admin = await getCurrentAdmin();
+    if (!admin) {
+        return NextResponse.json({ error: "Réservé aux administrateurs." }, { status: 401 });
+    }
+
     try {
-
-        // Extract userId from request params
-
         const { userId } = params;
-        // Delete the user with the provided userId
+
         if (!userId || typeof userId !== "string") {
-            throw new Error("Invalid user ID")
+            return NextResponse.json({ error: "Identifiant invalide." }, { status: 400 });
         }
-        const deleteUser = await prisma.user.deleteMany({
-            where: {
-                id: userId,
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                image: true,
+                listings: { select: { imageSrc: true } },
             },
         });
 
-        // If deletion was successful, return a success response
-        return NextResponse.json(deleteUser);
+        if (!user) {
+            return NextResponse.json({ error: "Utilisateur introuvable." }, { status: 404 });
+        }
+
+        await prisma.user.delete({ where: { id: userId } });
+
+        // Nettoyage des fichiers : jamais bloquant.
+        await Promise.all([
+            ...user.listings.map((l) => deleteLocalUpload(l.imageSrc)),
+            deleteLocalUpload(user.image),
+        ]);
+
+        return NextResponse.json({
+            message: "Compte supprimé.",
+            deletedListings: user.listings.length,
+        });
     } catch (error) {
-
-        // Return an error response if deletion fails
-        return NextResponse.error();
-
+        console.error('ADMIN_DELETE_USER_ERROR', error);
+        return NextResponse.json({ error: "Suppression impossible." }, { status: 500 });
     }
 }

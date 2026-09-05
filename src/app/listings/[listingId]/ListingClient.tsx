@@ -38,23 +38,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
 }) => {
     const loginModal = useLoginModal();
     const router = useRouter();
-    /*   useEffect(() => {
-          const paymentResponse = fetch(
-              "https://api.preprod.konnect.network/v2/payments/init-payment", {
-              method: "POST",
-              headers: {
-                  "x-api-key": '6659a025a4e509be44c6aa64:bJVOc5H3YZuihT1lXrXd6RRu3J0G8',
-                  "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                  receiverWalletId: "6659a025a4e509be44c6aa68",
-                  amount: 1000,
-                  token: "TND"
-              }),
-          })
-          console.log(paymentResponse)
-  
-      }, []) */
+
     const disabledDates = useMemo(() => {
         let dates: Date[] = [];
         reservations.forEach((reservation) => {
@@ -70,29 +54,44 @@ const ListingClient: React.FC<ListingClientProps> = ({
     const [totalPrice, setTotalPrice] = useState(listing.price);
     const [dateRange, setDateRange] = useState<Range>(initialDateRange);
 
-    const onCreateReservation = useCallback(() => {
+    /**
+     * Réserver = deux étapes.
+     *   1. on enregistre la réservation « en attente de paiement » ;
+     *   2. on demande à Konnect une page de paiement, vers laquelle on
+     *      redirige le navigateur.
+     * La réservation ne devient définitive qu'au retour du paiement.
+     */
+    const onCreateReservation = useCallback(async () => {
         if (!currentUser) {
             return loginModal.onOpen();
         }
 
         setIsLoading(true);
-        axios.post(`/api/reservations`, {
-            totalPrice,
-            startDate: dateRange.startDate,
-            endDate: dateRange.endDate,
-            listingId: listing.id
-        }).then(() => {
-            toast.success("Reservation created successfully");
-            setDateRange(initialDateRange);
+        try {
+            const { data: reservation } = await axios.post("/api/reservations", {
+                totalPrice,
+                startDate: dateRange.startDate,
+                endDate: dateRange.endDate,
+                listingId: listing.id
+            });
 
-            router.push("/my-reservations")
-        }).catch((error) => {
-            toast.error("An error occurred")
-        }).finally(() => {
+            const { data: payment } = await axios.post("/api/payments/init", {
+                reservationId: reservation.id
+            });
+
+            toast.success("Redirection vers le paiement sécurisé...");
+            window.location.href = payment.payUrl;
+        } catch (error) {
+            const message = axios.isAxiosError(error)
+                ? error.response?.data?.error
+                : undefined;
+            toast.error(message || "Une erreur est survenue.");
+
+            // La réservation existe peut-être déjà, en attente de paiement :
+            // on rafraîchit pour que le calendrier reflète la réalité.
+            router.refresh();
             setIsLoading(false);
-
-        })
-
+        }
     }, [
         totalPrice,
         dateRange,
