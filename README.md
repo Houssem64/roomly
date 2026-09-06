@@ -59,7 +59,9 @@ sont classés par gouvernorat.
 
 L'application est conçue pour **fonctionner intégralement en local** : la base de
 données, les photos et les comptes vivent sur la machine. Le seul service
-extérieur est la passerelle de paiement **Konnect**.
+extérieur est la passerelle de paiement **Konnect** — et même celle-ci peut être
+remplacée par une passerelle de démonstration intégrée, pour un fonctionnement
+100 % hors ligne.
 
 ---
 
@@ -72,13 +74,13 @@ extérieur est la passerelle de paiement **Konnect**.
 - Dates déjà réservées automatiquement grisées
 - Calcul du prix à la nuit (villa, vacances) ou au mois (autres catégories)
 - Réservation avec paiement en ligne
-- Favoris et suivi de ses réservations
+- Favoris, suivi de ses réservations (à venir / passées) et reprise d'un paiement en attente
 
 ### Côté propriétaire
 
 - Publication d'un bien en six étapes, avec envoi d'une photo depuis l'ordinateur
 - Gestion de ses biens (« Mes propriétés »)
-- Suivi des réservations reçues sur ses biens
+- Suivi des réservations reçues sur ses biens, avec les coordonnées des locataires
 
 ### Côté administrateur
 
@@ -88,6 +90,7 @@ extérieur est la passerelle de paiement **Konnect**.
 - Gestion des comptes utilisateurs : recherche, filtre par rôle, tri, pagination,
   suppression avec confirmation
 - Consultation des biens en lecture seule (chaque propriétaire gère les siens)
+- **Réglages** : bascule entre la passerelle Konnect et une passerelle de démonstration
 
 ### Transverse
 
@@ -114,11 +117,11 @@ Navigateur ──▶ Next.js 14 (App Router) ──┬── Prisma ──▶ Mo
 | Accès aux données | Prisma 5 |
 | Base de données | MongoDB 8 (replica set mono-nœud) |
 | Cartographie | Leaflet / React-Leaflet |
-| Paiement | Konnect (preprod) |
+| Paiement | Konnect (preprod), ou passerelle de démonstration locale |
 
 > **Pourquoi un replica set ?** Le connecteur MongoDB de Prisma a besoin des
 > transactions, qui ne sont disponibles qu'en mode replica set — même avec un
-> seul serveur. Le script `scripts/setup-mongodb-replicaset.ps1` s'en charge.
+> seul serveur. `npm run db:mongo` s'en charge entièrement.
 
 ---
 
@@ -127,18 +130,18 @@ Navigateur ──▶ Next.js 14 (App Router) ──┬── Prisma ──▶ Mo
 ```sh
 roomly/
 ├── prisma/
-│   └── schema.prisma              # Modèles User, Listing, Reservation, Admin…
+│   └── schema.prisma              # Modèles User, Listing, Reservation, Admin, Setting…
 ├── public/
 │   ├── images/                    # Logo, image par défaut
 │   └── uploads/                   # Photos envoyées par les utilisateurs
 │       └── seed/                  # Photos de démonstration
 ├── scripts/
-│   ├── setup-mongodb-replicaset.ps1  # Active le replica set (administrateur)
-│   ├── init-replica.mjs              # Initialise le replica set rs0
-│   ├── migrate-from-atlas.mjs        # Rapatrie l'ancienne base Atlas (lecture seule)
-│   ├── fetch-seed-images.mjs         # Télécharge les photos de démonstration
-│   ├── seed-data.mjs                 # Catalogue des données de démonstration
-│   └── seed.mjs                      # Remplit la base
+│   ├── setup-mongodb.ps1          # Prépare MongoDB de A à Z (s'élève tout seul)
+│   ├── init-replica.mjs           # Initialise le replica set rs0
+│   ├── migrate-from-atlas.mjs     # Rapatrie l'ancienne base Atlas (lecture seule)
+│   ├── fetch-seed-images.mjs      # Télécharge les photos de démonstration
+│   ├── seed-data.mjs              # Catalogue des données de démonstration
+│   └── seed.mjs                   # Remplit la base
 └── src/
     ├── middleware.ts              # Protection des routes /admin et API sensibles
     ├── components/ui/             # Primitives shadcn/ui
@@ -147,14 +150,14 @@ roomly/
         ├── actions/               # Lectures serveur (listings, user, admin, paiement)
         ├── api/                   # Routes API
         │   ├── admin/stats/       # Statistiques du tableau de bord
-        │   ├── payments/          # init + webhook Konnect
+        │   ├── payments/          # init + webhook Konnect + passerelle de démo
         │   ├── upload/            # Réception des photos
         │   └── …
         ├── admin/                 # Connexion + tableau de bord
         ├── components/            # Composants d'interface
-        ├── libs/                  # prismadb, konnect, uploads
+        ├── libs/                  # prismadb, konnect, demoPayment, settings, uploads
         ├── listings/[listingId]/  # Fiche d'un bien
-        ├── payment/               # Pages de retour de paiement
+        ├── payment/               # Pages de retour + page de paiement de démo
         └── …
 ```
 
@@ -167,29 +170,21 @@ roomly/
 - **Node.js 18+** — https://nodejs.org
 - **MongoDB Community Server** — https://www.mongodb.com/try/download/community
 
-### Installation
+### Installation complète, en une commande
 
 ```sh
 git clone https://github.com/Houssem64/roomly
 cd roomly
-npm install
+npm run setup
 ```
 
-### Activer le replica set MongoDB (une seule fois)
+`npm run setup` installe les dépendances, configure MongoDB (mode replica set,
+exigé par Prisma), crée la structure de la base, télécharge les photos et
+remplit les données de démonstration.
 
-Dans un PowerShell lancé **en tant qu'administrateur** :
-
-```sh
-powershell -ExecutionPolicy Bypass -File scripts/setup-mongodb-replicaset.ps1
-```
-
-### Préparer la base et les données de démonstration
-
-Dans un PowerShell normal, à la racine du projet :
-
-```sh
-npm run db:setup
-```
+> Windows affichera **une fois** une fenêtre d'autorisation pour modifier la
+> configuration de MongoDB : cliquez sur **Oui**. Aucune autre intervention
+> manuelle n'est nécessaire.
 
 ### Lancer l'application
 
@@ -214,11 +209,13 @@ Le site est disponible sur **http://localhost:3000**, l'administration sur
 | `npm run build` | Compile la version de production |
 | `npm start` | Démarre la version compilée |
 | `npm run lint` | Analyse statique du code |
-| `npm run db:init` | Initialise le replica set MongoDB (`rs0`) |
+| `npm run setup` | **Installation complète sur une nouvelle machine** |
+| `npm run db:mongo` | Configure MongoDB en replica set (demande l'autorisation) |
+| `npm run db:init` | Initialise seulement le replica set `rs0` |
 | `npm run db:push` | Synchronise la base avec `schema.prisma` |
 | `npm run db:images` | Télécharge les photos de démonstration |
 | `npm run db:seed` | Remplit la base (`-- --reset` pour repartir de zéro) |
-| `npm run db:setup` | Enchaîne `db:init`, `db:push`, `db:images`, `db:seed` |
+| `npm run db:setup` | Enchaîne `db:mongo`, `db:push`, `db:images`, `db:seed` |
 | `npm run db:migrate` | Rapatrie l'ancienne base MongoDB Atlas |
 | `npx prisma studio` | Explore la base dans une interface graphique |
 
@@ -255,6 +252,23 @@ Le paiement suit un aller-retour en quatre temps :
    passer la réservation en `COMPLETED` ou `FAILED`.
 
 Une réservation `FAILED` libère automatiquement les dates concernées.
+
+### Deux passerelles, au choix
+
+L'administrateur bascule entre les deux depuis l'onglet **Réglages** du panneau
+d'administration (le réglage est stocké en base, la modification est immédiate) :
+
+| | Konnect | Démonstration |
+| --- | --- | --- |
+| Nature | Vraie passerelle bancaire (preprod) | Page de paiement intégrée à Roomly |
+| Internet | Requis | Non requis |
+| Carte | Saisie chez Konnect | Aucune carte demandée |
+| Usage | Fonctionnement normal | Hors ligne, ou quand le bac à sable Konnect est en panne |
+
+La passerelle de démonstration reproduit le déroulé de Konnect — récapitulatif,
+compte à rebours de 30 minutes, choix du moyen de paiement — et se termine par
+deux boutons : paiement réussi ou paiement échoué. Un bandeau l'identifie
+clairement et aucun numéro de carte n'est jamais demandé.
 
 > ⚠️ **La clé d'API n'est jamais exposée au navigateur.** Tous les appels à
 > Konnect partent du serveur.

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import { getPaymentStatus, PaymentStatus } from "@/app/libs/konnect";
+import { isDemoRef } from "@/app/libs/demoPayment";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,12 @@ async function handle(paymentRef: string) {
       // « 200 » pour que Konnect ne réessaie pas indéfiniment.
       console.warn("PAYMENT_WEBHOOK_UNKNOWN_REF", paymentRef);
       return NextResponse.json({ received: true });
+    }
+
+    // Konnect n'appelle jamais cette adresse pour un paiement de
+    // démonstration : celui-ci est confirmé depuis le site lui-même.
+    if (isDemoRef(paymentRef)) {
+      return NextResponse.json({ received: true, status: reservation.paymentStatus });
     }
 
     const status = await getPaymentStatus(paymentRef);

@@ -57,15 +57,16 @@ Elle crée un compte, clique sur « Roomly your home », et remplit un formulair
 en six étapes : catégorie du bien, ville, nombre de pièces, photo, description,
 prix. Son annonce apparaît alors sur le site.
 
-Elle retrouve ses biens dans **« Mes propriétés »** et les demandes reçues dans
-**« Réservations sur mes biens »**.
+Elle retrouve ses biens dans **« My Properties »** et les demandes reçues dans
+**« Reservations Received »** — avec, pour chacune, le nom et les coordonnées
+du locataire.
 
 ### Le locataire
 
 C'est la personne qui **cherche et réserve un bien**.
 
 Elle choisit un bien, sélectionne ses dates dans un calendrier, paie, et
-retrouve ensuite ses réservations dans **« Mes réservations »**. Elle peut aussi
+retrouve ensuite ses réservations dans **« My Reservations »**. Elle peut aussi
 mettre des biens en favoris (le petit cœur).
 
 > Un même compte peut être à la fois propriétaire et locataire : rien n'empêche
@@ -80,6 +81,9 @@ Son rôle est **la gestion des comptes utilisateurs** : consulter la liste,
 rechercher quelqu'un, et supprimer un compte qui pose problème. Il voit aussi
 les statistiques générales et la liste des biens **en consultation seule** —
 il ne modifie pas les annonces, ce sont les propriétaires qui gèrent les leurs.
+
+Il dispose enfin d'un onglet **« Réglages »**, où il choisit la passerelle de
+paiement utilisée par le site (voir le chapitre 4).
 
 ---
 
@@ -203,6 +207,37 @@ abandonné ne doit pas bloquer un bien indéfiniment.
 > qui confirme le paiement. Les deux chemins font exactement le même contrôle,
 > tout fonctionne normalement.
 
+### Les deux passerelles de paiement
+
+Le site sait fonctionner avec **deux** passerelles. L'administrateur choisit
+laquelle est active dans l'onglet **« Réglages »** de son panneau ; le
+changement est immédiat, sans redémarrage.
+
+| | **Konnect** | **Démonstration** |
+| --- | --- | --- |
+| Ce que c'est | La vraie passerelle bancaire tunisienne, en mode test | Une page de paiement intégrée à Roomly |
+| Internet | Indispensable | Inutile |
+| Carte bancaire | Saisie sur le site de Konnect | Aucune carte demandée |
+| Argent | Aucun en mode test, mais le circuit est réel | Aucun, à aucun moment |
+| Quand l'utiliser | Dès que le service de Konnect fonctionne | Hors ligne, ou quand Konnect est en panne |
+
+**Pourquoi une passerelle de démonstration ?** Pendant le développement de ce
+projet, le service de carte bancaire du bac à sable de Konnect a été mis hors
+service de leur côté (« Bank card payment service is currently unavailable in
+the sandbox environment »). Sans solution de repli, il devenait impossible de
+montrer une réservation complète. La passerelle de démonstration résout cela :
+elle reprend le même déroulé — récapitulatif, compte à rebours de 30 minutes,
+choix du moyen de paiement — mais deux boutons remplacent la banque, l'un pour
+un paiement réussi, l'autre pour un échec.
+
+Elle est reconnaissable au premier coup d'œil : un bandeau jaune annonce
+« Demo payment gateway », et **aucun numéro de carte n'est jamais demandé**.
+C'est volontaire : on ne doit jamais pouvoir la confondre avec un vrai paiement.
+
+Le reste du programme ne change pas. Une réservation payée en démonstration
+suit exactement le même chemin qu'une réservation payée par Konnect : même
+enregistrement, même statut, même page de confirmation.
+
 ---
 
 ## 5. Où sont rangées les choses
@@ -257,10 +292,12 @@ roomly/
 | `/api/reservations` | Réserver | Utilisateur connecté |
 | `/api/payments/init` | Démarrer un paiement | Le locataire concerné |
 | `/api/payments/webhook` | Recevoir le résultat du paiement | Konnect |
+| `/api/payments/demo/confirm` | Résultat d'un paiement de démonstration | Le locataire concerné |
 | `/api/users` | Lister les utilisateurs | **Administrateur** |
 | `/api/users/[id]` | Supprimer un compte | **Administrateur** |
 | `/api/alllistings` | Lister tous les biens | **Administrateur** |
 | `/api/admin/stats` | Les statistiques | **Administrateur** |
+| `/api/admin/settings` | Lire et changer la passerelle de paiement | **Administrateur** |
 
 ---
 
@@ -280,6 +317,39 @@ node --version
 ```
 
 Un numéro de version doit s'afficher (par exemple `v20.11.0`).
+
+---
+
+### La méthode rapide : une seule commande
+
+Ouvrez PowerShell (**normal**, pas besoin d'administrateur), placez-vous dans
+le dossier du projet et tapez :
+
+```bash
+npm run setup
+```
+
+C'est tout. Cette commande fait, dans l'ordre : installer les bibliothèques,
+configurer MongoDB, créer la structure de la base, télécharger les photos et
+remplir les données de démonstration.
+
+> **Une seule chose vous sera demandée.** Windows affichera une fenêtre bleue
+> « Voulez-vous autoriser cette application à apporter des modifications ? ».
+> Cliquez sur **Oui** : c'est nécessaire pour régler MongoDB (voir l'étape 2
+> ci-dessous pour comprendre pourquoi). Cette fenêtre n'apparaît qu'une fois,
+> à la toute première installation.
+
+Puis, pour démarrer le site :
+
+```bash
+npm run dev
+```
+
+Si tout s'est bien passé, vous pouvez sauter directement au
+[chapitre 7](#7-les-comptes-de-démonstration).
+
+Les étapes détaillées ci-dessous expliquent ce que `npm run setup` fait
+réellement. Elles sont utiles pour comprendre, ou si quelque chose bloque.
 
 ---
 
@@ -305,27 +375,22 @@ normalement un groupe de plusieurs serveurs qui se recopient mutuellement. Ici
 il n'y en a qu'un seul, mais Prisma a besoin de ce mode pour pouvoir annuler
 proprement une opération qui échouerait à mi-chemin.
 
-Par défaut, MongoDB ne l'active pas. Il faut donc modifier sa configuration, ce
-qui demande les droits administrateur :
-
-1. Cliquez sur **Démarrer**, tapez `PowerShell` ;
-2. **clic droit** sur « Windows PowerShell » → **« Exécuter en tant qu'administrateur »** ;
-3. placez-vous dans le dossier du projet et lancez :
+Par défaut, MongoDB ne l'active pas, et le modifier demande les droits
+administrateur. Une seule commande s'occupe de tout :
 
 ```bash
-powershell -ExecutionPolicy Bypass -File scripts/setup-mongodb-replicaset.ps1
+npm run db:mongo
 ```
 
-Le script modifie le fichier de configuration de MongoDB (après en avoir fait
-une sauvegarde) puis redémarre le service. Il affiche `OK` quand c'est fait.
+Elle ouvre elle-même la fenêtre d'autorisation Windows (cliquez sur **Oui**),
+modifie le fichier de configuration de MongoDB — après en avoir fait une
+sauvegarde —, redémarre le service, puis initialise le replica set.
 
-Ensuite, dans une fenêtre PowerShell **normale** :
+Le message attendu à la fin est :
+*« Le nœud est PRIMARY. MongoDB est prêt pour Prisma. »*
 
-```bash
-npm run db:init
-```
-
-Le message attendu est : *« Le nœud est PRIMARY. MongoDB est prêt pour Prisma. »*
+> Cette commande peut être relancée autant de fois qu'on veut. Si tout est déjà
+> en place, elle le détecte et ne redemande même pas l'autorisation.
 
 ---
 
@@ -383,13 +448,10 @@ Pour arrêter le site : `Ctrl` + `C` dans la fenêtre PowerShell.
 
 ### Tout enchaîner d'un coup
 
-Une fois l'étape 2 faite (elle ne se fait qu'une seule fois) :
-
-```bash
-npm run db:setup
-```
-
-Cette commande enchaîne les étapes 2 à 5.
+| Commande | Ce qu'elle enchaîne |
+| --- | --- |
+| `npm run setup` | Les étapes **1 à 5** — c'est la commande d'installation. |
+| `npm run db:setup` | Les étapes **2 à 5**, quand les bibliothèques sont déjà installées. |
 
 ---
 
@@ -445,6 +507,7 @@ Les mots de passe se changent dans le fichier `.env`
 | La carte des biens | Fonds de carte OpenStreetMap | Oui, pour afficher la carte |
 | Connexion « avec Google » | Serveurs de Google | Oui |
 | **Le paiement (Konnect)** | **Serveurs de Konnect** | **Oui** |
+| Le paiement (démonstration) | Votre ordinateur | Non |
 
 En clair : **débranchez Internet, tout continue de fonctionner sauf le paiement,
 la carte et la connexion Google.**
@@ -457,7 +520,7 @@ C'était l'objectif du projet : ne dépendre de l'extérieur que pour l'argent.
 | --- | --- |
 | Photos hébergées chez **Cloudinary** | Photos dans `public/uploads`, sur le PC |
 | Base **MongoDB Atlas** (en ligne) | **MongoDB** installé sur le PC |
-| Paiement écrit mais **jamais branché** | Paiement **Konnect réellement intégré** |
+| Paiement écrit mais **jamais branché** | Paiement **Konnect réellement intégré**, plus une passerelle de démonstration hors ligne |
 | Espace admin **accessible à tous** | Accès **contrôlé**, avec déconnexion |
 | Tableaux sans recherche | **Recherche, filtres et pagination** |
 | Aucune statistique | **Tableau de bord chiffré** |
@@ -485,8 +548,14 @@ Start-Service MongoDB
 
 ### « Prisma needs to perform transactions, which requires your MongoDB server to be run as a replica set »
 
-L'étape 2 de l'installation n'a pas été faite, ou MongoDB a été réinstallé.
-Reprenez l'étape 2.
+MongoDB n'est pas en mode replica set : l'étape 2 n'a pas été faite, ou MongoDB
+a été réinstallé depuis. Une seule commande corrige cela :
+
+```bash
+npm run db:mongo
+```
+
+Répondez **Oui** à la fenêtre d'autorisation, puis relancez le site.
 
 ---
 
@@ -519,7 +588,7 @@ npm run db:seed
 
 ---
 
-### « Clé d'API Konnect refusée »
+### « Konnect rejected the API key » / le paiement ne démarre pas
 
 Les clés de paiement du fichier `.env` ne sont plus valables. Il faut en
 générer de nouvelles :
@@ -535,6 +604,12 @@ KONNECT_WALLET_ID="votre-numero-de-portefeuille"
 ```
 
 4. redémarrez le site (`Ctrl` + `C`, puis `npm run dev`).
+
+**Solution immédiate, sans clés :** connectez-vous sur `/admin`, onglet
+**« Réglages »**, et activez la **passerelle de démonstration**. Les
+réservations et les paiements refonctionnent aussitôt, hors ligne. C'est aussi
+la marche à suivre si le service de Konnect est momentanément en panne de leur
+côté.
 
 Le reste de l'application fonctionne normalement pendant ce temps : seule
 l'étape de paiement est concernée.
@@ -572,10 +647,12 @@ Cela efface les données de démonstration et les recrée.
 
 | Commande | Effet |
 | --- | --- |
+| `npm run setup` | **Installe tout sur un ordinateur neuf** |
 | `npm run dev` | Démarre le site en mode développement |
 | `npm run build` | Prépare une version optimisée |
 | `npm start` | Démarre la version optimisée |
-| `npm run db:init` | Initialise le replica set MongoDB |
+| `npm run db:mongo` | Configure MongoDB pour Prisma (demande l'autorisation) |
+| `npm run db:init` | Initialise seulement le replica set MongoDB |
 | `npm run db:push` | Met la base à jour d'après `schema.prisma` |
 | `npm run db:images` | Télécharge les photos de démonstration |
 | `npm run db:seed` | Remplit la base de données |

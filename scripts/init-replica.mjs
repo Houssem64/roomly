@@ -6,7 +6,7 @@
  * attend que le serveur devienne PRIMARY.
  *
  * Prérequis : avoir lancé UNE FOIS, en administrateur,
- *   powershell -ExecutionPolicy Bypass -File scripts/setup-mongodb-replicaset.ps1
+ *   npm run db:mongo
  *
  * Usage : npm run db:init
  */
@@ -44,8 +44,8 @@ async function main() {
 
   if (!hello.setName && !hello.isreplicaset) {
     console.error("\n✖ MongoDB tourne en mode « standalone » : la replication n'est pas activée.");
-    console.error("  Lancez d'abord, dans un PowerShell ADMINISTRATEUR :");
-    console.error("    powershell -ExecutionPolicy Bypass -File scripts/setup-mongodb-replicaset.ps1\n");
+    console.error("  Lancez d'abord (une fenetre d'autorisation s'ouvrira) :");
+    console.error("    npm run db:mongo\n");
     await client.close();
     process.exit(1);
   }

@@ -55,7 +55,7 @@ interface InitPaymentResult {
 export async function initPayment(input: InitPaymentInput): Promise<InitPaymentResult> {
   if (!API_KEY || !WALLET_ID) {
     throw new Error(
-      "Le paiement n'est pas configuré : renseignez KONNECT_API_KEY et KONNECT_WALLET_ID dans le fichier .env."
+      "Payment is not configured: set KONNECT_API_KEY and KONNECT_WALLET_ID in the .env file."
     );
   }
 
@@ -104,12 +104,12 @@ export async function initPayment(input: InitPaymentInput): Promise<InitPaymentR
   try {
     data = JSON.parse(text);
   } catch {
-    throw new Error("Réponse illisible de la passerelle de paiement.");
+    throw new Error("Unreadable response from the payment gateway.");
   }
 
   if (!data?.payUrl || !data?.paymentRef) {
     console.error("KONNECT_INIT_UNEXPECTED", text);
-    throw new Error("Réponse inattendue de la passerelle de paiement.");
+    throw new Error("Unexpected response from the payment gateway.");
   }
 
   return { payUrl: data.payUrl, paymentRef: data.paymentRef };
@@ -123,7 +123,7 @@ export async function initPayment(input: InitPaymentInput): Promise<InitPaymentR
  */
 export async function getPaymentStatus(paymentRef: string): Promise<PaymentStatusValue> {
   if (!API_KEY) {
-    throw new Error("KONNECT_API_KEY manquant dans le fichier .env.");
+    throw new Error("KONNECT_API_KEY missing from the .env file.");
   }
 
   const response = await fetch(`${API_URL}/payments/${encodeURIComponent(paymentRef)}`, {
@@ -134,7 +134,7 @@ export async function getPaymentStatus(paymentRef: string): Promise<PaymentStatu
 
   if (!response.ok) {
     console.error("KONNECT_STATUS_FAILED", response.status, await response.text());
-    throw new Error("Impossible de vérifier l'état du paiement.");
+    throw new Error("Could not verify the payment status.");
   }
 
   const data = await response.json();
@@ -188,15 +188,16 @@ function describeKonnectError(status: number, body: string): string {
 
   if (status === 401 || code === "AUTHENTICATE_TOKEN_INVALID") {
     return (
-      "Clé d'API Konnect refusée. Vérifiez KONNECT_API_KEY et KONNECT_WALLET_ID " +
-      "dans le fichier .env : la clé doit être celle du tableau de bord Konnect " +
-      "(https://dashboard.preprod.konnect.network), au format « identifiant:secret »."
+      "Konnect rejected the API key. Check KONNECT_API_KEY and KONNECT_WALLET_ID in " +
+      "the .env file: the key must come from the Konnect dashboard " +
+      "(https://dashboard.preprod.konnect.network), in \"id:secret\" form. " +
+      "You can also switch to the demo gateway from the admin panel."
     );
   }
 
   if (status === 422 || status === 400) {
-    return `Konnect a refusé les informations de paiement${message ? " : " + message : "."}`;
+    return `Konnect rejected the payment details${message ? ": " + message : "."}`;
   }
 
-  return `La passerelle de paiement a répondu une erreur ${status}${message ? " : " + message : "."}`;
+  return `The payment gateway returned error ${status}${message ? ": " + message : "."}`;
 }

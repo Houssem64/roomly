@@ -46,15 +46,25 @@ export interface IListingsParams {
     category?: string;
     price?: number;
   }
+/** Coordonnées du locataire, affichées au propriétaire du bien. */
+export interface ReservationGuest {
+  name: string | null;
+  email: string | null;
+  phoneNumber: string | null;
+  image: string | null;
+}
+
 // Add this to your existing types file
 export type SafeReservation = Omit<
   Reservation,
-  "createdAt" | "startDate" | "endDate" | "listing"
+  "createdAt" | "startDate" | "endDate" | "listing" | "paymentExpiresAt"
 > & {
   createdAt: string;
   startDate: string;
   endDate: string;
+  paymentExpiresAt?: string | null;
   listing: SafeListing;
+  guest?: ReservationGuest;
 };
 export interface ReservationParams {
   listingId?: string;

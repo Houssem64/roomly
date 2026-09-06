@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
         return NextResponse.json(
-            { error: "Vous devez être connecté pour réserver." },
+            { error: "You must be signed in to book." },
             { status: 401 }
         );
     }
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     if (!listingId || !startDate || !endDate || !totalPrice) {
         return NextResponse.json(
-            { error: "Informations de réservation incomplètes." },
+            { error: "Incomplete booking details." },
             { status: 400 }
         );
     }
@@ -33,23 +33,23 @@ export async function POST(request: Request) {
     const end = new Date(endDate);
 
     if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-        return NextResponse.json({ error: "Dates invalides." }, { status: 400 });
+        return NextResponse.json({ error: "Invalid dates." }, { status: 400 });
     }
     if (end < start) {
         return NextResponse.json(
-            { error: "La date de fin doit suivre la date de début." },
+            { error: "The end date must come after the start date." },
             { status: 400 }
         );
     }
 
     const listing = await prisma.listing.findUnique({ where: { id: listingId } });
     if (!listing) {
-        return NextResponse.json({ error: "Bien introuvable." }, { status: 404 });
+        return NextResponse.json({ error: "Property not found." }, { status: 404 });
     }
 
     if (listing.userId === currentUser.id) {
         return NextResponse.json(
-            { error: "Vous ne pouvez pas réserver votre propre bien." },
+            { error: "You cannot book your own property." },
             { status: 400 }
         );
     }
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
 
     if (overlapping) {
         return NextResponse.json(
-            { error: "Ces dates viennent d'être réservées. Choisissez une autre période." },
+            { error: "Those dates have just been taken. Please pick another period." },
             { status: 409 }
         );
     }

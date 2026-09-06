@@ -33,10 +33,12 @@ export default async function getReservations(params: IParams) {
             where: query,
             include: {
                 listing: true,
-
+                // Le propriétaire doit pouvoir contacter son locataire :
+                // on remonte le strict nécessaire, jamais le mot de passe.
+                user: { select: { name: true, email: true, phoneNumber: true, image: true } },
             },
             orderBy: {
-                createdAt: 'desc'
+                startDate: 'desc'
             }
         });
         const SafeReservations = reservations.map((reservation) => ({
@@ -44,6 +46,8 @@ export default async function getReservations(params: IParams) {
             createdAt: reservation.createdAt.toISOString(),
             startDate: reservation.startDate.toISOString(),
             endDate: reservation.endDate.toISOString(),
+            paymentExpiresAt: reservation.paymentExpiresAt?.toISOString() ?? null,
+            guest: reservation.user,
             listing: {
                 ...reservation.listing,
                 createdAt: reservation.listing.createdAt.toISOString(),

@@ -1,5 +1,6 @@
 import prisma from "@/app/libs/prismadb";
 import { getPaymentStatus, PaymentStatus, PaymentStatusValue } from "@/app/libs/konnect";
+import { isDemoRef } from "@/app/libs/demoPayment";
 
 export interface VerifiedPayment {
   status: PaymentStatusValue | "UNKNOWN";
@@ -35,7 +36,18 @@ export default async function verifyPayment(paymentRef?: string | null): Promise
 
     // Un paiement déjà confirmé n'est jamais redemandé.
     if (status !== PaymentStatus.COMPLETED) {
-      status = await getPaymentStatus(paymentRef);
+      if (isDemoRef(paymentRef)) {
+        // Passerelle de démonstration : il n'y a personne à interroger.
+        // L'état enregistré fait foi, sauf si le lien a expiré entre-temps.
+        const expired =
+          reservation.paymentExpiresAt !== null && reservation.paymentExpiresAt < new Date();
+
+        if (expired && status === PaymentStatus.PENDING) {
+          status = PaymentStatus.FAILED;
+        }
+      } else {
+        status = await getPaymentStatus(paymentRef);
+      }
 
       if (status !== reservation.paymentStatus) {
         await prisma.reservation.update({

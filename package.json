@@ -8,12 +8,14 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "db:init": "node scripts/init-replica.mjs",
     "db:push": "prisma db push",
     "db:migrate": "node scripts/migrate-from-atlas.mjs",
     "db:images": "node scripts/fetch-seed-images.mjs",
     "db:seed": "node scripts/seed.mjs",
-    "db:setup": "npm run db:init && npm run db:push && npm run db:images && npm run db:seed"
+    "db:setup": "npm run db:mongo && npm run db:push && npm run db:images && npm run db:seed",
+    "db:mongo": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-mongodb.ps1",
+    "setup": "npm install && npm run db:setup",
+    "db:init": "node scripts/init-replica.mjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.0.0",

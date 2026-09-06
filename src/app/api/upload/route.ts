@@ -27,27 +27,27 @@ export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Vous devez être connecté." }, { status: 401 });
+      return NextResponse.json({ error: "You must be signed in." }, { status: 401 });
     }
 
     const formData = await request.formData();
     const file = formData.get("file");
 
     if (!file || typeof file === "string") {
-      return NextResponse.json({ error: "Aucun fichier reçu." }, { status: 400 });
+      return NextResponse.json({ error: "No file received." }, { status: 400 });
     }
 
     const extension = ALLOWED[file.type];
     if (!extension) {
       return NextResponse.json(
-        { error: "Format non supporté. Utilisez une image JPG, PNG ou WEBP." },
+        { error: "Unsupported format. Use a JPG, PNG or WEBP image." },
         { status: 400 }
       );
     }
 
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { error: "Image trop lourde (5 Mo maximum)." },
+        { error: "Image too large (5 MB maximum)." },
         { status: 400 }
       );
     }
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     // par le navigateur : on lit les premiers octets ("magic number").
     if (!looksLikeImage(bytes)) {
       return NextResponse.json(
-        { error: "Ce fichier n'est pas une image valide." },
+        { error: "This file is not a valid image." },
         { status: 400 }
       );
     }
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("UPLOAD_ERROR", error);
     return NextResponse.json(
-      { error: "L'enregistrement de l'image a échoué." },
+      { error: "Saving the image failed." },
       { status: 500 }
     );
   }

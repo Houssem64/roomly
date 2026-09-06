@@ -25,7 +25,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
 
     const upload = useCallback(async (file: File) => {
         if (!file.type.startsWith("image/")) {
-            toast.error("Veuillez choisir une image (JPG, PNG ou WEBP).");
+            toast.error("Please choose an image (JPG, PNG or WEBP).");
             return;
         }
 
@@ -42,13 +42,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || "L'envoi de l'image a échoué.");
+                throw new Error(data.error || "The upload failed.");
             }
 
             onChange(data.url);
-            toast.success("Photo ajoutée");
+            toast.success("Photo added");
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "L'envoi de l'image a échoué.");
+            toast.error(error instanceof Error ? error.message : "The upload failed.");
         } finally {
             setIsUploading(false);
         }
@@ -99,25 +99,25 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
                 {isUploading ? (
                     <>
                         <BeatLoader color="#E2A399" />
-                        <div className="font-semibold text-lg">Envoi en cours...</div>
+                        <div className="font-semibold text-lg">Uploading...</div>
                     </>
                 ) : (
                     <>
                         <TbPhotoPlus size={50} />
-                        <div className="font-semibold text-lg">Cliquez pour ajouter une photo</div>
+                        <div className="font-semibold text-lg">Click to add a photo</div>
                         <div className="text-sm text-neutral-500">
-                            ou glissez-déposez une image ici — JPG, PNG ou WEBP, 5 Mo max.
+                            or drag and drop an image here — JPG, PNG or WEBP, 5 MB max.
                         </div>
                     </>
                 )}
 
                 {value && !isUploading && (
                     <div className="absolute inset-0 w-full h-full">
-                        <Image src={value} alt="Photo du bien" style={{ objectFit: "cover" }} fill />
+                        <Image src={value} alt="Property photo" style={{ objectFit: "cover" }} fill />
                         <button
                             type="button"
                             onClick={handleRemove}
-                            aria-label="Retirer la photo"
+                            aria-label="Remove photo"
                             className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-neutral-100 transition"
                         >
                             <IoClose size={18} />

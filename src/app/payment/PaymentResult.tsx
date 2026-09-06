@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { FaCheckCircle, FaTimesCircle, FaHourglassHalf } from "react-icons/fa";
 
 import Container from "@/app/components/Container";
@@ -11,30 +10,30 @@ const CONFIG = {
   COMPLETED: {
     icon: FaCheckCircle,
     colour: "text-green-500",
-    title: "Paiement confirmé",
-    subtitle: "Votre réservation est validée. Bon séjour !",
+    title: "Payment confirmed",
+    subtitle: "Your reservation is confirmed. Enjoy your stay!",
   },
   FAILED: {
     icon: FaTimesCircle,
     colour: "text-red-500",
-    title: "Paiement non abouti",
-    subtitle: "Aucun montant n'a été débité. Vous pouvez réessayer quand vous le souhaitez.",
+    title: "Payment not completed",
+    subtitle: "Nothing was charged. You can try again whenever you like.",
   },
   PENDING: {
     icon: FaHourglassHalf,
     colour: "text-amber-500",
-    title: "Paiement en cours de traitement",
-    subtitle: "La banque n'a pas encore confirmé. Actualisez cette page dans quelques instants.",
+    title: "Payment being processed",
+    subtitle: "The bank has not confirmed yet. Refresh this page in a moment.",
   },
   UNKNOWN: {
     icon: FaHourglassHalf,
     colour: "text-neutral-400",
-    title: "Paiement introuvable",
-    subtitle: "Nous n'avons pas retrouvé ce paiement. Consultez vos réservations pour vérifier.",
+    title: "Payment not found",
+    subtitle: "We could not find this payment. Check your reservations to be sure.",
   },
 } as const;
 
-/** Page de retour après un passage par la page de paiement Konnect. */
+/** Landing page after coming back from the payment gateway. */
 export default function PaymentResult({ status, reservation }: VerifiedPayment) {
   const config = CONFIG[status] ?? CONFIG.UNKNOWN;
   const Icon = config.icon;
@@ -52,20 +51,20 @@ export default function PaymentResult({ status, reservation }: VerifiedPayment) 
 
             <dl className="flex flex-col gap-2 text-sm text-neutral-600">
               <div className="flex justify-between">
-                <dt>Arrivée</dt>
+                <dt>Check-in</dt>
                 <dd className="font-medium text-neutral-900">
-                  {format(reservation.startDate, "d MMMM yyyy", { locale: fr })}
+                  {format(reservation.startDate, "d MMMM yyyy")}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt>Départ</dt>
+                <dt>Check-out</dt>
                 <dd className="font-medium text-neutral-900">
-                  {format(reservation.endDate, "d MMMM yyyy", { locale: fr })}
+                  {format(reservation.endDate, "d MMMM yyyy")}
                 </dd>
               </div>
               <div className="flex justify-between border-t pt-2 mt-2">
-                <dt>Montant</dt>
-                <dd className="font-semibold text-neutral-900">{reservation.totalPrice} DT</dd>
+                <dt>Amount</dt>
+                <dd className="font-semibold text-neutral-900">{reservation.totalPrice} TND</dd>
               </div>
             </dl>
           </div>
@@ -76,13 +75,13 @@ export default function PaymentResult({ status, reservation }: VerifiedPayment) 
             href="/my-reservations"
             className="flex-1 rounded-lg bg-[#E2A399] px-6 py-3 font-semibold text-white transition hover:opacity-80"
           >
-            Mes réservations
+            My reservations
           </Link>
           <Link
             href="/"
             className="flex-1 rounded-lg border border-neutral-300 px-6 py-3 font-semibold transition hover:bg-neutral-50"
           >
-            Retour à l&apos;accueil
+            Back to home
           </Link>
         </div>
       </div>

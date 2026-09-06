@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
-import { FiBarChart2, FiUsers, FiHome, FiLogOut, FiExternalLink } from "react-icons/fi";
+import { FiBarChart2, FiUsers, FiHome, FiSettings, FiLogOut, FiExternalLink } from "react-icons/fi";
 
 import {
     DropdownMenu,
@@ -20,13 +20,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import StatsPanel from "./StatsPanel";
 import UsersPanel from "./UsersPanel";
 import ListingsPanel from "./ListingsPanel";
+import SettingsPanel from "./SettingsPanel";
 
-type Tab = "overview" | "users" | "listings";
+type Tab = "overview" | "users" | "listings" | "settings";
 
 const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "overview", label: "Vue d'ensemble", icon: FiBarChart2 },
     { id: "users", label: "Utilisateurs", icon: FiUsers },
     { id: "listings", label: "Biens", icon: FiHome },
+    { id: "settings", label: "Réglages", icon: FiSettings },
 ];
 
 interface DashboardComponentProps {
@@ -119,6 +121,7 @@ export default function DashboardComponent({ adminEmail }: DashboardComponentPro
                     {tab === "overview" && <StatsPanel />}
                     {tab === "users" && <UsersPanel />}
                     {tab === "listings" && <ListingsPanel />}
+                    {tab === "settings" && <SettingsPanel />}
                 </main>
             </div>
         </div>

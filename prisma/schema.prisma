@@ -103,6 +103,10 @@ model Reservation {
   paymentRef    String?
   paymentStatus String  @default("PENDING")
 
+  // Date limite pour regler ce paiement (Konnect : 30 minutes). Passe ce
+  // delai, le lien de paiement n'est plus valable et les dates se liberent.
+  paymentExpiresAt DateTime?
+
  phoneNumber String?
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
@@ -131,4 +135,13 @@ model VerificationToken {
   expires    DateTime
  
   @@unique([identifier, token])
+}
+/// Reglages de l'application modifiables depuis le panneau d'administration,
+/// sans toucher au fichier .env ni redemarrer le serveur.
+/// Exemple : la passerelle de paiement utilisee (Konnect ou demonstration).
+model Setting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
 }

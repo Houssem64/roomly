@@ -79,13 +79,13 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 reservationId: reservation.id
             });
 
-            toast.success("Redirection vers le paiement sécurisé...");
+            toast.success("Redirecting to secure payment...");
             window.location.href = payment.payUrl;
         } catch (error) {
             const message = axios.isAxiosError(error)
                 ? error.response?.data?.error
                 : undefined;
-            toast.error(message || "Une erreur est survenue.");
+            toast.error(message || "Something went wrong.");
 
             // La réservation existe peut-être déjà, en attente de paiement :
             // on rafraîchit pour que le calendrier reflète la réalité.
